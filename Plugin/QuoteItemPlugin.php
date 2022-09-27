@@ -108,7 +108,9 @@ class QuoteItemPlugin
                     "smile_retailer_suite_quote_item_price_change",
                     ['item' => $resultItem, 'product' => $product]
                 );
+
             }
+
         }
 
         return $resultItem;
