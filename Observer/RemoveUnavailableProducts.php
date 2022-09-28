@@ -79,9 +79,9 @@ class RemoveUnavailableProducts implements ObserverInterface
      */
     public function execute(EventObserver $observer)
     {
-        if (!$this->settingsHelper->isDriveMode()) {
-            return;
-        }
+        // if (!$this->settingsHelper->isDriveMode()) {
+        //     return;
+        // }
 
         /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $productCollection */
         $productCollection = $observer->getEvent()->getCollection();
@@ -91,7 +91,8 @@ class RemoveUnavailableProducts implements ObserverInterface
         foreach ($productCollection as $key => $product) {
             $offer = $this->getCurrentOffer($product);
 
-            if ($offer === null || (false === $offer->isAvailable())) {
+            if ($offer == null) return;
+            if (false === $offer->isAvailable()) {
                 $unavailableProducts[] = $product;
                 $productCollection->removeItemByKey($key);
             }
