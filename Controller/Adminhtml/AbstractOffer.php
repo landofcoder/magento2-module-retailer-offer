@@ -14,6 +14,8 @@
 
 namespace Smile\RetailerOffer\Controller\Adminhtml;
 
+use Lofmp\SellerOffer\Api\Data\SellerOfferInterfaceFactory;
+use Lofmp\SellerOffer\Model\SellerOffer;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\ForwardFactory;
@@ -21,6 +23,7 @@ use Magento\Framework\Registry;
 use Magento\Framework\View\Result\PageFactory;
 use Smile\Offer\Api\OfferRepositoryInterface as OfferRepository;
 use Smile\Offer\Api\Data\OfferInterfaceFactory as OfferFactory;
+use Lofmp\SellerOffer\Model\OfferRepository as SellerOfferRepository;
 
 /**
  * Abstract Controller for retailer offer management.
@@ -63,27 +66,31 @@ abstract class AbstractOffer extends Action
     /**
      * Abstract constructor.
      *
-     * @param Context         $context              Application context
-     * @param PageFactory     $resultPageFactory    Result Page factory
-     * @param ForwardFactory  $resultForwardFactory Result forward factory
-     * @param Registry        $coreRegistry         Application registry
-     * @param OfferRepository $offerRepository      Offer Repository
-     * @param OfferFactory    $offerFactory         Offer Factory
+     * @param Context $context Application context
+     * @param PageFactory $resultPageFactory Result Page factory
+     * @param ForwardFactory $resultForwardFactory Result forward factory
+     * @param Registry $coreRegistry Application registry
+     * @param OfferRepository $offerRepository Offer Repository
+     * @param OfferFactory $offerFactory Offer Factory
      */
     public function __construct(
-        Context $context,
-        PageFactory $resultPageFactory,
-        ForwardFactory $resultForwardFactory,
-        Registry $coreRegistry,
-        OfferRepository $offerRepository,
-        OfferFactory $offerFactory
-    ) {
-        $this->resultPageFactory    = $resultPageFactory;
+        Context               $context,
+        PageFactory           $resultPageFactory,
+        ForwardFactory        $resultForwardFactory,
+        Registry              $coreRegistry,
+        OfferRepository       $offerRepository,
+        OfferFactory          $offerFactory,
+        SellerOfferRepository $sellerOfferRepository,
+        SellerOfferInterfaceFactory  $sellerOfferInterface
+    )
+    {
+        $this->resultPageFactory = $resultPageFactory;
         $this->resultForwardFactory = $resultForwardFactory;
-        $this->coreRegistry         = $coreRegistry;
-        $this->offerRepository      = $offerRepository;
-        $this->offerFactory         = $offerFactory;
-
+        $this->coreRegistry = $coreRegistry;
+        $this->offerRepository = $offerRepository;
+        $this->offerFactory = $offerFactory;
+        $this->sellerOfferRepository = $sellerOfferRepository;
+        $this->sellerOfferInterface = $sellerOfferInterface;
         parent::__construct($context);
     }
 

@@ -116,6 +116,22 @@
                 </item>
             </argument>
         </field>
+        <field name="request_status" formElement="select">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="value" xsi:type="number">0</item>
+                    <item name="dataScope" xsi:type="string">request_status</item>
+                    <item name="label" xsi:type="string" translate="true">Request Status</item>
+                </item>
+            </argument>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Lofmp\SellerOffer\Model\Source\RequestStatus"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
         <field name="price">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
@@ -124,7 +140,7 @@
                     <item name="formElement" xsi:type="string">input</item>
                     <item name="label" xsi:type="string" translate="true">Price</item>
                     <item name="validation" xsi:type="array">
-                        <item name="required-entry" xsi:type="boolean">false</item>
+                        <item name="required-entry" xsi:type="boolean">true</item>
                     </item>
                 </item>
             </argument>
@@ -137,7 +153,7 @@
                     <item name="formElement" xsi:type="string">input</item>
                     <item name="label" xsi:type="string" translate="true">Special Price</item>
                     <item name="validation" xsi:type="array">
-                        <item name="required-entry" xsi:type="boolean">false</item>
+                        <item name="required-entry" xsi:type="boolean">true</item>
                     </item>
                 </item>
             </argument>

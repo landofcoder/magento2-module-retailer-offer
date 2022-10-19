@@ -13,7 +13,7 @@
  */
 
 namespace Smile\RetailerOffer\Controller\Adminhtml\Offer;
-
+;
 use Smile\Offer\Api\Data\OfferInterface;
 use Smile\RetailerOffer\Controller\Adminhtml\AbstractOffer;
 
@@ -34,12 +34,12 @@ class Save extends AbstractOffer
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultRedirectFactory->create();
 
-        $data         = $this->getRequest()->getPostValue();
+        $data = $this->getRequest()->getPostValue();
         $redirectBack = $this->getRequest()->getParam('back', false);
 
         if ($data) {
             $identifier = $this->getRequest()->getParam('offer_id');
-            $model = $this->offerFactory->create();
+            $model = $this->sellerOfferInterface->create();
 
             if ($identifier) {
                 $model->load($identifier);
@@ -54,6 +54,7 @@ class Save extends AbstractOffer
                 $model->loadPost($data);
                 $this->_getSession()->setPageData($data);
                 $this->offerRepository->save($model);
+                $this->sellerOfferRepository->saveSellerOffer($model);
                 $this->messageManager->addSuccessMessage(__('You saved the offer %1.', $model->getId()));
                 $this->_objectManager->get('Magento\Backend\Model\Session')->setFormData(false);
 
