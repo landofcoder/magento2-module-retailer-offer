@@ -55,9 +55,6 @@
         </div>
     </div>
     <div class="catalog-product-retailer-availability-content">
-        <div class="title">
-            <span><?php echo __("Store availability : ") ;?></span>
-        </div>
         <div class="content-wrapper" data-bind="scope: 'catalog-product-retailer-availability'">
             <div data-bind="visible: hasStore()" class="current-store">
                 <p class="availability" data-bind="css: { inStock: getIsInStock() == true, outOfStock: getIsInStock() == false }">

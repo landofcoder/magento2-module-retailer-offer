@@ -21,6 +21,7 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\ForwardFactory;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Result\PageFactory;
+use Magento\Ui\Component\MassAction\Filter;
 use Smile\Offer\Api\OfferRepositoryInterface as OfferRepository;
 use Smile\Offer\Api\Data\OfferInterfaceFactory as OfferFactory;
 use Lofmp\SellerOffer\Model\OfferRepository as SellerOfferRepository;
@@ -81,7 +82,17 @@ abstract class AbstractOffer extends Action
         OfferRepository       $offerRepository,
         OfferFactory          $offerFactory,
         SellerOfferRepository $sellerOfferRepository,
-        SellerOfferInterfaceFactory  $sellerOfferInterface
+        SellerOfferInterfaceFactory  $sellerOfferInterface,
+        \Magento\Inventory\Model\SourceRepository $sourceRepository,
+        \Magento\InventoryApi\Api\Data\SourceInterface $sourceInterface,
+        \Smile\RetailerOffer\Helper\Offer $offerHelper,
+        \Magento\InventoryApi\Api\SourceItemsSaveInterface $sourceItemsSaveInterface,
+        \Magento\Catalog\Model\ProductRepository $productRepository,
+        \Magento\InventoryApi\Api\StockRepositoryInterface $productStockRepository,
+        \Magento\Catalog\Model\Product $product,
+        \Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry,
+        \Smile\Offer\Model\ResourceModel\Offer\CollectionFactory $offerCollectionFactory,
+        Filter $filter,
     )
     {
         $this->resultPageFactory = $resultPageFactory;
@@ -91,6 +102,16 @@ abstract class AbstractOffer extends Action
         $this->offerFactory = $offerFactory;
         $this->sellerOfferRepository = $sellerOfferRepository;
         $this->sellerOfferInterface = $sellerOfferInterface;
+        $this->sourceRepository = $sourceRepository;
+        $this->sourceInterface = $sourceInterface;
+        $this->offerHelper = $offerHelper;
+        $this->sourceItemsSaveInterface = $sourceItemsSaveInterface;
+        $this->productRepository  = $productRepository;
+        $this->productStockRepository = $productStockRepository;
+        $this->product = $product;
+        $this->stockRegistry = $stockRegistry;
+        $this->offerCollectionFactory = $offerCollectionFactory;
+        $this->filter = $filter;
         parent::__construct($context);
     }
 

@@ -159,4 +159,51 @@
             </argument>
         </field>
     </fieldset>
+    <fieldset name="offer_stock">
+        <argument name="data" xsi:type="array">
+            <item name="config" xsi:type="array">
+                <item name="label" xsi:type="string" translate="true">Offer Stock</item>
+                <item name="collapsible" xsi:type="boolean">true</item>
+            </item>
+        </argument>
+        <field name="qty">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="sortOrder" xsi:type="number">10</item>
+                    <item name="dataType" xsi:type="string">number</item>
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="label" xsi:type="string" translate="true">Quantity</item>
+                    <item name="dataScope" xsi:type="string">qty</item>
+                    <item name="validation" xsi:type="array">
+                        <item name="required-entry" xsi:type="boolean">true</item>
+                    </item>
+                    <item name="visible" xsi:type="boolean">true</item>
+                </item>
+            </argument>
+            <settings>
+                <disabled>true</disabled>
+            </settings>
+        </field>
+        <field name="is_in_stock" formElement="select">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="value" xsi:type="number">1</item>
+                    <item name="dataScope" xsi:type="string">is_in_stock</item>
+                    <item name="validation" xsi:type="array">
+                        <item name="required-entry" xsi:type="boolean">true</item>
+                    </item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Stock Status</label>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Magento\CatalogInventory\Model\Source\Stock"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+    </fieldset>
 </form>

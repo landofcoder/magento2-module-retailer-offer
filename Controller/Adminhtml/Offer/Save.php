@@ -40,7 +40,7 @@ class Save extends AbstractOffer
         if ($data) {
             $identifier = $this->getRequest()->getParam('offer_id');
             $model = $this->sellerOfferInterface->create();
-
+            $addQtyToProduct = false;
             if ($identifier) {
                 $model->load($identifier);
                 if (!$model->getId()) {
@@ -48,13 +48,33 @@ class Save extends AbstractOffer
 
                     return $resultRedirect->setPath('*/*/');
                 }
+            } else{
+                $retailerId = $data['seller_id'];
+                $productId = $data['product_id'];
+                $offerCheck = $this->offerCollectionFactory->create()->addFieldToFilter('seller_id', $retailerId)
+                    ->addFieldToFilter('product_id', $productId);
+                if ($offerCheck->getSize()){
+                    $this->messageManager->addErrorMessage(__('This product is existed in in offer id %1.', $offerCheck->getFirstItem()->getId()));
+                    return $resultRedirect->setPath('*/*/');
+                }
+                $addQtyToProduct = true;
             }
 
             try {
+                if ($data['qty'] == 0){
+                    $data['is_in_stock'] = 0;
+                }
                 $model->loadPost($data);
                 $this->_getSession()->setPageData($data);
                 $this->offerRepository->save($model);
                 $this->sellerOfferRepository->saveSellerOffer($model);
+                if ($addQtyToProduct) {
+                    $stockItem = $this->stockRegistry->getStockItem($model->getData('product_id'));
+                    $oldQty = $stockItem->getQty();
+                    $newQty = $oldQty + $data['qty'];
+                    $stockItem->setQty($newQty);
+                    $stockItem->save();
+                }
                 $this->messageManager->addSuccessMessage(__('You saved the offer %1.', $model->getId()));
                 $this->_objectManager->get('Magento\Backend\Model\Session')->setFormData(false);
 

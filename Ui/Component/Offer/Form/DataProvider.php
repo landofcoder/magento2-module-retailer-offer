@@ -69,6 +69,7 @@ class DataProvider extends AbstractDataProvider
         Registry $registry,
         RequestInterface $request,
         OfferRepositoryInterface $offerRepository,
+        \Magento\Inventory\Model\SourceItemFactory $sourceItem,
         array $meta = [],
         array $data = []
     ) {
@@ -76,6 +77,7 @@ class DataProvider extends AbstractDataProvider
         $this->registry = $registry;
         $this->offerRepository = $offerRepository;
         $this->request = $request;
+        $this->sourceItem = $sourceItem;
         parent::__construct($name, $primaryFieldName, $requestFieldName, $meta, $data);
     }
 
@@ -91,10 +93,12 @@ class DataProvider extends AbstractDataProvider
         }
 
         $offer = $this->getCurrentOffer();
-
+        $this->setOfferToFilter();
+        $offerItem = $this->collection->getFirstItem();
         if ($offer) {
             $offerData = $offer->getData();
             if (!empty($offerData)) {
+                $offerData['request_status'] = $offerItem->getData('request_status');
                 $this->loadedData[$offer->getId()] = $offerData;
             }
         }
@@ -126,5 +130,23 @@ class DataProvider extends AbstractDataProvider
         }
 
         return $offer;
+    }
+
+    public function setOfferToFilter()
+    {
+        $this->getCollection()->getSelect()
+            ->join(
+                ['seller_offer' => $this->getCollection()->getResource()->getTable("lofmp_offer")],
+                'main_table.offer_id = seller_offer.offer_id',
+                [
+                    'lof_seller_id',
+                    'comment',
+                    'request_status'
+                ]
+            )
+            ->group(
+                'main_table.offer_id'
+            );
+        return $this;
     }
 }

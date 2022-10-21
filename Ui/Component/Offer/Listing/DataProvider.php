@@ -52,11 +52,11 @@ class DataProvider extends AbstractDataProvider
         $requestFieldName,
         $collectionFactory,
         \Smile\Offer\Model\OfferFactory $offerFactory,
-        \Smile\RetailerOfferInventory\Model\StockItemRepository $stockItemRepository,
         \Lofmp\SellerOffer\Helper\Data $offerHelper,
         RetailerRepository $retailerRepository,
         \Lofmp\SellerOffer\Model\SellerOfferFactory $sellerOffer,
         \Lofmp\SellerOffer\Model\ResourceModel\Offer $offer,
+        \Magento\Inventory\Model\SourceItemFactory $sourceItem,
         array $addFieldStrategies = [],
         array $addFilterStrategies = [],
         array $meta = [],
@@ -71,10 +71,10 @@ class DataProvider extends AbstractDataProvider
         $this->addFieldStrategies  = $addFieldStrategies;
         $this->addFilterStrategies = $addFilterStrategies;
         $this->offerFactory = $offerFactory;
-        $this->stockItemRepository = $stockItemRepository;
         $this->offerHelper = $offerHelper;
         $this->retailerRepository = $retailerRepository;
         $this->sellerOffer = $sellerOffer;
+        $this->sourceItem = $sourceItem;
         $this->offer = $offer;
     }
 
@@ -136,10 +136,10 @@ class DataProvider extends AbstractDataProvider
         foreach ($items as $key => $item) {
             if (isset($item['offer_id'])){
                 try {
-                    $stockItem = $this->stockItemRepository->getByOfferId($item['offer_id']);
-                    $items[$key]['qty'] =  $stockItem->getQty();
-                    $items[$key]['is_in_stock'] = $stockItem->getIsInStock();
                     $sellerOffer = $this->sellerOffer->create()->load($item['offer_id']);
+//                    $sourceItem = $this->sourceItem->create()->load($sellerOffer->getData('source_item_id'));
+                    $items[$key]['qty'] =  $sellerOffer->getData('qty');
+                    $items[$key]['is_in_stock'] = $sellerOffer->getData('is_in_stock');
                     $items[$key]['price'] = $sellerOffer->getPrice();
                     $items[$key]['special_price'] = $sellerOffer->getSpecialPrice();
                     $items[$key]['is_available'] = $sellerOffer->getIsAvailable();

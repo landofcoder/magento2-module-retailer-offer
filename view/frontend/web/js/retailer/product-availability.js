@@ -78,7 +78,7 @@ define([
          * @returns {string}
          */
         getLinkLabel : function () {
-            return $.mage.__('View availability in stores ...');
+            return $.mage.__('Offers');
         },
 
         /**
