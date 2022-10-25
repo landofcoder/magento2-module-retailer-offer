@@ -97,6 +97,63 @@
                 </argument>
             </filterSelect>
         </filters>
+        <massaction name="listing_massaction">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="selectProvider" xsi:type="string">smile_retailer_offer_listing.smile_retailer_offer_listing.smile_retailer_offer_columns.ids</item>
+                    <item name="indexField" xsi:type="string">offer_id</item>
+                </item>
+            </argument>
+            <action name="delete">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="type" xsi:type="string">delete</item>
+                        <item name="label" xsi:type="string" translate="true">Delete</item>
+                        <item name="url" xsi:type="url" path="smile_retailer/offer/massDelete"/>
+                        <item name="confirm" xsi:type="array">
+                            <item name="title" xsi:type="string" translate="true">Delete items</item>
+                            <item name="message" xsi:type="string" translate="true">Are you sure you want to delete selected items?</item>
+                        </item>
+                    </item>
+                </argument>
+            </action>
+            <action name="approve">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="type" xsi:type="string">approve</item>
+                        <item name="label" xsi:type="string" translate="true">Approve</item>
+                        <item name="url" xsi:type="url" path="smile_retailer/offer/massApprove"/>
+                    </item>
+                </argument>
+            </action>
+            <action name="disapprove">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="type" xsi:type="string">disapprove</item>
+                        <item name="label" xsi:type="string" translate="true">Disapprove</item>
+                        <item name="url" xsi:type="url" path="smile_retailer/offer/massDisapprove"/>
+                    </item>
+                </argument>
+            </action>
+            <action name="enable">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="type" xsi:type="string">enable</item>
+                        <item name="label" xsi:type="string" translate="true">Enable</item>
+                        <item name="url" xsi:type="url" path="smile_retailer/offer/massEnable"/>
+                    </item>
+                </argument>
+            </action>
+            <action name="disable">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="type" xsi:type="string">disable</item>
+                        <item name="label" xsi:type="string" translate="true">Disable</item>
+                        <item name="url" xsi:type="url" path="smile_retailer/offer/massDisable"/>
+                    </item>
+                </argument>
+            </action>
+        </massaction>
         <paging name="listing_paging"/>
     </listingToolbar>
     <columns name="smile_retailer_offer_columns">
@@ -181,6 +238,58 @@
                 </item>
             </argument>
         </column>
+        <column name="qty">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">Qty</label>
+                <visible>true</visible>
+            </settings>
+        </column>
+        <column name="qty_sold">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">Sold</label>
+                <visible>true</visible>
+            </settings>
+        </column>
+        <column name="is_in_stock" class="Lofmp\SellerOffer\Ui\Component\Listing\Column\StockStatus">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">Stock Status</label>
+                <visible>true</visible>
+            </settings>
+        </column>
+        <column name="price" class="Lofmp\SellerOffer\Ui\Component\Listing\Column\Price">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">Price</label>
+                <visible>true</visible>
+            </settings>
+        </column>
+        <column name="special_price" class="Lofmp\SellerOffer\Ui\Component\Listing\Column\Price">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">Special Price</label>
+                <visible>true</visible>
+            </settings>
+        </column>
+        <column name="is_available" class="Lofmp\SellerOffer\Ui\Component\Listing\Column\IsAvailable">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">text</item>
+                    <item name="add_field" xsi:type="boolean">true</item>
+                    <item name="label" xsi:type="string" translate="true">Is Available</item>
+                    <item name="sortOrder" xsi:type="number">70</item>
+                </item>
+            </argument>
+        </column>
+        <column name="request_status" class="Lofmp\SellerOffer\Ui\Component\Listing\Column\Status">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">Request Status</label>
+                <visible>true</visible>
+            </settings>
+        </column>
         <actionsColumn name="actions" class="Smile\RetailerOffer\Ui\Component\Offer\Listing\Column\Actions">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
@@ -188,7 +297,7 @@
                     <item name="editUrlPath" xsi:type="string">smile_retailer/offer/edit</item>
                     <item name="deleteUrlPath" xsi:type="string">smile_retailer/offer/delete</item>
                     <item name="urlEntityParamName" xsi:type="string">offer_id</item>
-                    <item name="sortOrder" xsi:type="number">300</item>
+                    <item name="sortOrder" xsi:type="number">100</item>
                 </item>
             </argument>
         </actionsColumn>

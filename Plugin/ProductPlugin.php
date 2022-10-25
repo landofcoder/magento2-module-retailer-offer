@@ -66,14 +66,14 @@ class ProductPlugin
     {
         $isAvailable = $proceed();
 
-        if ($this->settingsHelper->useStoreOffers()) {
-            $isAvailable = false;
-            $offer       = $this->helper->getCurrentOffer($product);
+        // if ($this->settingsHelper->useStoreOffers()) {
+        //     $isAvailable = false;
+        //     $offer       = $this->helper->getCurrentOffer($product);
 
-            if ($offer !== null && $offer->isAvailable()) {
-                $isAvailable = (bool) $offer->isAvailable();
-            }
-        }
+        //     if ($offer !== null && $offer->isAvailable()) {
+        //         $isAvailable = (bool) $offer->isAvailable();
+        //     }
+        // }
 
         return $isAvailable;
     }

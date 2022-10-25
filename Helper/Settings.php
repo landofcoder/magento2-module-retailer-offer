@@ -102,7 +102,8 @@ class Settings extends AbstractHelper
      */
     public function useStoreOffers()
     {
-        return !($this->isAdmin() || !$this->isDriveMode());
+        return !$this->isAdmin();
+        // return !($this->isAdmin() || !$this->isDriveMode());
     }
 
     /**

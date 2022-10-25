@@ -72,6 +72,8 @@ class CategoryPlugin
      */
     public function aroundGetProductCount(Category $category, \Closure $proceed)
     {
+        return $proceed();
+
         if (!$this->currentStore->getRetailer() || !$this->currentStore->getRetailer()->getId()) {
             return $proceed();
         }

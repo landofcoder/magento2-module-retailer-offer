@@ -12,9 +12,14 @@
  */
 namespace Smile\RetailerOffer\Helper;
 
+use Lof\MarketPlace\Model\SellerFactory;
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\InventoryApi\Api\Data\SourceItemInterface;
+use Magento\InventoryApi\Api\SourceItemRepositoryInterface;
 use Smile\Offer\Api\Data\OfferInterface;
 use Smile\StoreLocator\CustomerData\CurrentStore;
+use function PHPUnit\Framework\throwException;
 
 /**
  * Generic Helper for Retailer Offer
@@ -50,11 +55,24 @@ class Offer extends \Magento\Framework\App\Helper\AbstractHelper
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Smile\Offer\Api\OfferManagementInterface $offerManagement,
-        \Smile\StoreLocator\CustomerData\CurrentStore $currentStore
+        \Smile\StoreLocator\CustomerData\CurrentStore $currentStore,
+        SellerFactory $sellerFactory,
+        \Magento\Inventory\Model\SourceRepository $sourceRepository,
+        \Magento\InventoryApi\Api\Data\SourceInterface $sourceInterface,
+        \Magento\InventoryApi\Api\SourceItemsSaveInterface $sourceItemsSaveInterface,
+        SearchCriteriaBuilder $searchCriteriaBuilder,
+        SourceItemRepositoryInterface $sourceItemRepository,
+        \Magento\InventoryApi\Api\Data\SourceItemInterface $sourceItemInterface
     ) {
         $this->offerManagement = $offerManagement;
         $this->currentStore    = $currentStore;
-
+        $this->sellerFactory = $sellerFactory;
+        $this->sourceRepository = $sourceRepository;
+        $this->sourceInterface = $sourceInterface;
+        $this->sourceItemsSaveInterface = $sourceItemsSaveInterface;
+        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->sourceItemRepository = $sourceItemRepository;
+        $this->sourceItemInterface = $sourceItemInterface;
         parent::__construct($context);
     }
 
@@ -100,5 +118,66 @@ class Offer extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         return $offer;
+    }
+
+    public function getRetailerSource($sellerId) {
+        $seller = $this->getSeller($sellerId);
+        try {
+            return $this->sourceRepository->get($seller->getUrlKey());
+        } catch (\Exception $e){
+            return null;
+        }
+    }
+
+    public function getSeller($sellerId)
+    {
+        return $this->sellerFactory->create()->load($sellerId);
+    }
+
+    public function createRetailerSource($sellerId)
+    {
+        $seller = $this->getSeller($sellerId);
+        if (!$this->getRetailerSource($sellerId)) {
+            try {
+                $offerSource = $this->sourceInterface;
+                $offerSource->setSourceCode($seller->getUrlKey());
+                if ($seller->getData('status') == \Lof\MarketPlace\Model\Seller::STATUS_ENABLED){
+                    $offerSource->setEnabled($seller->getData('status'));
+                }else {
+                    $offerSource->setEnabled(0);
+                }
+                $offerSource->setName($seller->getData('name'));
+                $offerSource->setCountryId($seller->getData('country_id'));
+                $offerSource->setRegionId($seller->getData('region_id'));
+                $offerSource->setCity($seller->getData('city'));
+                $offerSource->setPostcode($seller->getData('postcode'));
+                $this->sourceRepository->save($offerSource);
+            } catch (\Exception $e){
+
+            }
+        }
+    }
+
+    public function getOfferSourceItem($sourceCode, $sku)
+    {
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter(SourceItemInterface::SKU, $sku)
+            ->addFilter(SourceItemInterface::SOURCE_CODE, $sourceCode)
+            ->create();
+        return $this->sourceItemRepository->getList($searchCriteria)->getItems();
+    }
+
+    public function saveOfferSourceItem($sourceCode, $sku, $qty, $isInStock)
+    {
+        try {
+            $sourceItem = $this->sourceItemInterface;
+            $sourceItem->setSourceCode($sourceCode);
+            $sourceItem->setSku($sku);
+            $sourceItem->setQuantity($qty);
+            $sourceItem->setStatus($isInStock);
+            $this->sourceItemsSaveInterface->execute([$sourceItem]);
+        } catch (\Exception $e){
+            throw $e;
+        }
     }
 }

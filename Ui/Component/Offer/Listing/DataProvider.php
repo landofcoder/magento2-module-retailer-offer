@@ -12,6 +12,7 @@
  */
 namespace Smile\RetailerOffer\Ui\Component\Offer\Listing;
 
+use Lofmp\Retailer\Model\RetailerRepository;
 use Magento\Ui\DataProvider\AbstractDataProvider;
 
 /**
@@ -50,6 +51,12 @@ class DataProvider extends AbstractDataProvider
         $primaryFieldName,
         $requestFieldName,
         $collectionFactory,
+        \Smile\Offer\Model\OfferFactory $offerFactory,
+        \Lofmp\SellerOffer\Helper\Data $offerHelper,
+        RetailerRepository $retailerRepository,
+        \Lofmp\SellerOffer\Model\SellerOfferFactory $sellerOffer,
+        \Lofmp\SellerOffer\Model\ResourceModel\Offer $offer,
+        \Magento\Inventory\Model\SourceItemFactory $sourceItem,
         array $addFieldStrategies = [],
         array $addFilterStrategies = [],
         array $meta = [],
@@ -63,6 +70,12 @@ class DataProvider extends AbstractDataProvider
 
         $this->addFieldStrategies  = $addFieldStrategies;
         $this->addFilterStrategies = $addFilterStrategies;
+        $this->offerFactory = $offerFactory;
+        $this->offerHelper = $offerHelper;
+        $this->retailerRepository = $retailerRepository;
+        $this->sellerOffer = $sellerOffer;
+        $this->sourceItem = $sourceItem;
+        $this->offer = $offer;
     }
 
     /**
@@ -101,5 +114,66 @@ class DataProvider extends AbstractDataProvider
         }
 
         parent::addFilter($filter);
+    }
+
+    /**
+     * Get data
+     *
+     * @return array
+     */
+    public function getData()
+    {
+        if (!$this->getCollection()->isLoaded()) {
+            $this->setOfferToFilter();
+            $this->getCollection()->load();
+        }
+
+        $items = $this->getCollection()->toArray();
+        $items = $items['items'];
+        if (count($items)){
+            $totalQty = $this->offerHelper->getSoldQtyOfferProducts();
+        }
+        foreach ($items as $key => $item) {
+            if (isset($item['offer_id'])){
+                try {
+                    $sellerOffer = $this->sellerOffer->create()->load($item['offer_id']);
+//                    $sourceItem = $this->sourceItem->create()->load($sellerOffer->getData('source_item_id'));
+                    $items[$key]['qty'] =  $sellerOffer->getData('qty');
+                    $items[$key]['is_in_stock'] = $sellerOffer->getData('is_in_stock');
+                    $items[$key]['price'] = $sellerOffer->getPrice();
+                    $items[$key]['special_price'] = $sellerOffer->getSpecialPrice();
+                    $items[$key]['is_available'] = $sellerOffer->getIsAvailable();
+                    $qtySold = 0;
+                    if (isset($totalQty[(int)$sellerOffer->getProductId()][$item['entity_id']])){
+                        $qtySold = $totalQty[(int)$sellerOffer->getProductId()][$item['entity_id']];
+                    }
+                    $items[$key]['qty_sold'] = $qtySold;
+                } catch (\Exception $e){
+
+                }
+            }
+        }
+        return [
+            'totalRecords' => $this->getCollection()->getSize(),
+            'items' => $items,
+        ];
+    }
+
+    public function setOfferToFilter()
+    {
+        $this->getCollection()->getSelect()
+            ->join(
+                ['seller_offer' => $this->getCollection()->getResource()->getTable("lofmp_offer")],
+                'main_table.offer_id = seller_offer.offer_id',
+                [
+                    'lof_seller_id',
+                    'comment',
+                    'request_status'
+                ]
+            )
+            ->group(
+                'main_table.offer_id'
+            );
+        return $this;
     }
 }

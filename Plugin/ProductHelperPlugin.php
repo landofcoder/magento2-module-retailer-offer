@@ -71,14 +71,14 @@ class ProductHelperPlugin
         $controller,
         $params = null
     ) {
-        if ($this->settingsHelper->isDriveMode() && (false === $this->settingsHelper->isEnabledShowOutOfStock())) {
-            $productMock = $this->productFactory->create([])->setId($productId);
-            $offer       = $this->offerHelper->getCurrentOffer($productMock);
+        // if ($this->settingsHelper->isDriveMode() && (false === $this->settingsHelper->isEnabledShowOutOfStock())) {
+        //     $productMock = $this->productFactory->create([])->setId($productId);
+        //     $offer       = $this->offerHelper->getCurrentOffer($productMock);
 
-            if ($offer && !$offer->isAvailable()) {
-                $productId = false;
-            }
-        }
+        //     if ($offer && !$offer->isAvailable()) {
+        //         $productId = false;
+        //     }
+        // }
 
         return [$productId, $controller, $params];
     }
