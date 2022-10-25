@@ -49,8 +49,16 @@ class Save extends AbstractOffer
                     return $resultRedirect->setPath('*/*/');
                 }
             } else{
-                $retailerId = $data['seller_id'];
-                $productId = $data['product_id'];
+                // Check if offer is existed
+                $model->loadPost($data);
+                $productId = $model->getData('product_id');
+                $product = $this->product->load($productId);
+                if (!($product->getId()) || !($product->getTypeId() == 'simple')){
+                    $this->messageManager->addErrorMessage(__('Only simple product can be add to offer.'));
+                    return $resultRedirect->setPath('*/*/');
+                }
+
+                $retailerId = $model->getData('seller_id');
                 $offerCheck = $this->offerCollectionFactory->create()->addFieldToFilter('seller_id', $retailerId)
                     ->addFieldToFilter('product_id', $productId);
                 if ($offerCheck->getSize()){
@@ -65,6 +73,18 @@ class Save extends AbstractOffer
                     $data['is_in_stock'] = 0;
                 }
                 $model->loadPost($data);
+                $productId = $model->getData('product_id');
+                $retailerId = $model->getData('seller_id');
+
+                // Check if request product belong to this seller
+                $seller = $this->retailerRepository->getSellerIdByRetailerId($retailerId);
+                $sellerProduct = $this->sellerProductCollectionFactory->create()->addFieldToFilter('seller_id', $seller['seller_id'])
+                    ->addFieldToFilter('product_id', $productId);
+                if ($sellerProduct->getSize()){
+                    $this->messageManager->addErrorMessage(__('The requested product is this seller product.'));
+                    return $resultRedirect->setPath('*/*/');
+                }
+
                 $this->_getSession()->setPageData($data);
                 $this->offerRepository->save($model);
                 $this->sellerOfferRepository->saveSellerOffer($model);

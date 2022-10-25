@@ -93,6 +93,8 @@ abstract class AbstractOffer extends Action
         \Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry,
         \Smile\Offer\Model\ResourceModel\Offer\CollectionFactory $offerCollectionFactory,
         Filter $filter,
+        \Lofmp\Retailer\Model\RetailerRepository $retailerRepository,
+        \Lof\MarketPlace\Model\ResourceModel\SellerProduct\CollectionFactory $sellerProductCollectionFactory,
     )
     {
         $this->resultPageFactory = $resultPageFactory;
@@ -112,6 +114,8 @@ abstract class AbstractOffer extends Action
         $this->stockRegistry = $stockRegistry;
         $this->offerCollectionFactory = $offerCollectionFactory;
         $this->filter = $filter;
+        $this->retailerRepository = $retailerRepository;
+        $this->sellerProductCollectionFactory = $sellerProductCollectionFactory;
         parent::__construct($context);
     }
 
